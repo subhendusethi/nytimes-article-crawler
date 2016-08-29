@@ -1,4 +1,3 @@
----------------------------------------------------------------------------------------------------------
 DEPENDENCIES:
 
 Python 2.7.11+
@@ -15,4 +14,17 @@ HOW TO EXECUTE:
 		<results-directory-path> : Result directory path without "/" at the end
 ---------------------------------------------------------------------------------------------------------
 Improvements:
-ADD Depth in the DFS routine
+Add Depth in the DFS routine
+
+---------------------------------------------------------------------------------------------------------
+The format of the retrieved articles files:
+Name: 
+	DOC_<ID>.txt
+Content:
+	URL
+	TITLE
+	META-KEYWORDS
+	DATE
+	DOC ID
+	CONTENT
+All of the content is newline separated.
