@@ -16,13 +16,6 @@ Note:
 	<results-directory-path> : Result directory path without "/" at the end
 ```
 
-For production environments...
-
-```sh
-$ npm install --production
-$ npm run predeploy
-$ NODE_ENV=production node app
-```
 
 ### EXTRACTED DOCUMENT FORMAT
 
