@@ -2,7 +2,6 @@ Dependencies:
 
   - Python 2.7.11+
   - BeautifulSoup 4.5.1
-  - urllib2 2.7
 
 ### HOT TO EXECUTE
 
@@ -11,9 +10,13 @@ Dependencies:
 $ python crawler.py <start-url-string> <number-of-documents-to-crawl> <results-directory-path>
 
 Note:
-	<start-url-string> : Root of the BFS tree of article document URLs
-	<number-of-documents-to-crawl> : Number of article documents to crawl
-	<results-directory-path> : Result directory path without "/" at the end
+  <start-url-string> : Root of the BFS tree of article document URLs
+  
+  <number-of-documents-to-crawl> : Number of article documents to crawl
+  
+  <results-directory-path> : Result directory path without "/" at the end.
+  Here the output of the crawled documents will be stored in this format:
+  "DOC"-<ID>-".txt"
 ```
 
 
@@ -35,8 +38,9 @@ Content
     CONTENT
 
 ### IMPROVEMENTS
-Improvements: Add Depth in the BFS routine
-
+Improvements: Add Depth in the BFS routine.
+Add more documentation
+Add more functionality: Like crawling specific type of content e.g. [music, crime, politics, etc]
 
 
 License
