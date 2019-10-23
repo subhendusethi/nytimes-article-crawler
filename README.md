@@ -7,7 +7,7 @@ Dependencies:
 
 
 ```sh
-$ python crawler.py <start-url-string> <number-of-documents-to-crawl> <results-directory-path>
+$ python crawler_usage.py <start-url-string> <number-of-documents-to-crawl> <results-directory-path>
 
 Note:
   <start-url-string> : Root of the BFS tree of article document URLs
