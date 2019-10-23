@@ -1,6 +1,6 @@
 Dependencies:
 
-  - Python 2.7.11+
+  - Python 3.7
   - BeautifulSoup 4.5.1
 
 ### HOT TO EXECUTE
