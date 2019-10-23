@@ -6,11 +6,13 @@
 # Prashant Dewangan (CS13B1025@iith.ac.in) #
 # -----------------------------------------#
 
-import socket
 import sys
 from bs4 import BeautifulSoup
 import os
-import urllib2
+try:
+    import urllib.request as urllib2
+except ImportError:
+    import urllib2
 import re
 from collections import deque
 
@@ -42,11 +44,9 @@ def removeExcess(urlList):
 
     # Check for seed domain and discard irrelevant URLs
     for url in finalList:
-        index = url.find("www.nytimes.com")
-        if(index == -1):
-            continue
-        else:
+        if(url.startswith("http://www.nytimes.com") or url.startswith("https://www.nytimes.com")):
             # Append URLs which contain "www.nytimes.com"
+            print("cleared url ::::: ", url)
             urlList.append(url)
 
     # Return the final list of URLs
@@ -61,7 +61,7 @@ def extractHref(dataReceived):
     # Find all "a" tags where href is present
     for itHref in soup.findAll('a', href = True):
         # If "href = True", append the URL to hrefLinks
-        hrefLinks.append(itHref.get('href').encode('utf-8'))
+        hrefLinks.append(itHref.get('href'))
     # Return all URLs
     return hrefLinks
 
@@ -88,14 +88,16 @@ def parseData(dataReceived, url, index, resultsPath):
             contentFinal+=content
     else:
         return -1
-    if words >= 150:
-        print "Adding ", url, " to the list of urls word corpus is collected."
+    if words >= 15:
+        print("Adding ", url, " to the list of urls word corpus is collected.")
         # Open file with name as Document ID
         fileName = "DOC_" + str(index) + ".txt"
         file = open(resultsPath + "/" +fileName, "w")
         
         # Write URL in the File
-        file.write(url.encode('utf-8') + "\n")
+        file.write(url + '\n')
+
+        print("write complete")
 
         # Get TITLE by crawling through the HTML
         title = soup.find('head')
@@ -104,7 +106,7 @@ def parseData(dataReceived, url, index, resultsPath):
             if title != None:
                 # If "title" found, get text and write the text in the file
                 title = title.getText()
-                file.write(title.encode('utf-8') + "\n")
+                file.write(title + "\n")
             else:
                 # Else write "TITLE NOT FOUND"
                 file.write("TITLE NOT FOUND\n")
@@ -113,7 +115,7 @@ def parseData(dataReceived, url, index, resultsPath):
         meta = soup.find('meta', {'name' : 'keywords'})
         if(meta != None):
             meta = meta.get('content')
-            file.write(meta.encode('utf-8') + "\n")
+            file.write(meta + "\n")
         else:
             file.write("META-KEYWORDS NOT FOUND\n")
 
@@ -121,13 +123,13 @@ def parseData(dataReceived, url, index, resultsPath):
         date = soup.find('li',{'class' : 'date'})
         if(date != None):
             date = date.getText()
-            file.write(date.encode('utf-8') + "\n")
+            file.write(date + "\n")
         else:
             date = soup.find('meta', {'name' : 'DISPLAYDATE'})
             if date != None:
                 date = date.get('content')
                 if date != None:
-                    file.write(date.encode('utf-8') + "\n")
+                    file.write(date + "\n")
                 else:
                     file.write("DATE NOT FOUND\n")
             
@@ -135,7 +137,7 @@ def parseData(dataReceived, url, index, resultsPath):
         file.write(str(index) + "\n")
 
         # Write CONTENT
-        file.write(contentFinal.encode('utf-8'))
+        file.write(contentFinal)
         file.close()
         return 1
     else:
@@ -145,37 +147,37 @@ def parseData(dataReceived, url, index, resultsPath):
 def crawlWebsite(url, index, resultsPath):
     hrefLinks = []
     flag = -1
-
+    # Get all the data of an HTML page
     try:
-        # Get all the data of an HTML page
+        print("crawling url::::", url)
         req = urllib2.urlopen(url)
-        #dataReceivedTemp = urllib2.build_opener(urllib2.HTTPCookieProcessor).open(req)
-        dataReceived = req.read()#dataReceivedTemp.read()
-
+        dataReceived = req.read()
         # Call parseData() to extract data, Content, meta-keyword, title, date
         flag = parseData(dataReceived, url, index, resultsPath)
         # Extract links from the page
         hrefLinks = extractHref(dataReceived)
         # Remove irrelevant URLs and extra parts from the URLs
         hrefLinks = removeExcess(hrefLinks)
-    except Exception:
-        pass
+    except Exception as e:
+        print(e)
+
     # returns list of article links extracted from "url" and flag if new Document was created
+
     return (hrefLinks,flag)
 
 # bfs routine to iteratively generate new links given a starting url
 def bfs(start, urlLimit, resultsPath):
     globalIndex = 0
     # Append the first URL
-    urlQueue.append(start)
+    urlQueue.append((start))
     while globalIndex != urlLimit+1:
         # If we reach a stage where we cannot generate new links from the bfs tree of url
         if len(urlQueue) == 0:
-            print "urlQueue size turns ZERO"
+            print("urlQueue size turns ZERO")
             break
         url = urlQueue.popleft()
-        if url not in urlMAP:                
-            # Mark url as visited 
+        if url not in urlMAP:
+            # Mark url as visited
             urlMAP[url] = 1
             # Assign unique DOCUMENT_ID to the doucument of the link
             index = globalIndex 
@@ -190,8 +192,8 @@ def bfs(start, urlLimit, resultsPath):
 
 if __name__ == "__main__":
     if len(sys.argv) < 4:
-        print "Too few arguments!"
-        print "python crawler.py <start-url-string> <number-of-documents-to-crawl> <results-directory-path>"
+        print("Too few arguments!")
+        print("python crawler.py <start-url-string> <number-of-documents-to-crawl> <results-directory-path>")
     else:
 
         # Start/seed domain URL, homepage of nytimes
@@ -207,10 +209,10 @@ if __name__ == "__main__":
         if (os.path.isdir(resultsPath)):
             # Call BFS with homepage of nytimes as root of the bfs tree
             bfs(start, int(urlLimit), resultsPath)
-            print "Crawling Finished"
+            print("Crawling Finished")
         else:
-            print "Invalid Directory Path!"
-            print "python crawler.py <start-url-string> <number-of-documents-to-crawl> <results-directory-path>"
+            print("Invalid Directory Path!")
+            print("python crawler.py <start-url-string> <number-of-documents-to-crawl> <results-directory-path>")
         
         
         
